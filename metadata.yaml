@@ -1,0 +1,8 @@
+name: astrbot_plugin_rss_pusher
+display_name: RSS 订阅推送
+short_desc: 订阅 RSS/Atom，更新时在 QQ 官方以 Markdown 主动推送
+desc: 移植 qq-maid-bot 的 RSS 能力：/rss add 添加订阅源，后台定时轮询新条目并以 QQ Markdown 主动推送；支持条目去重、内容更新识别、失败重试、多会话订阅隔离与订阅源测试。
+version: v1.0.0
+author: 雨爲
+repo: https://github.com/yuweitk/astrbot_plugin_rss_pusher
+astrbot_version: ">=4.16"

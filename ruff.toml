@@ -1,0 +1,17 @@
+# ruff 配置（AstrBot 官方要求提交前用 ruff 格式化）
+# 目标版本跟随 AstrBot 的最低 Python 版本，避免误用 3.11+ 才有的 API。
+target-version = "py310"
+line-length = 100
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    # 插件里大量 catch-all 是刻意为之：一条坏数据/一次网络抖动不能让整个插件崩掉，
+    # 统一在 catch 里记日志并降级。
+    "BLE001",
+    # 子类化 HTTPRequestHandler 必须叫 do_GET
+    "N802",
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["S101"]  # 测试里当然用 assert

@@ -1,0 +1,154 @@
+{
+  "enabled": {
+    "description": "启用后台轮询",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后仍然可以管理订阅，但不再自动抓取与推送。"
+  },
+  "poll_interval_seconds": {
+    "description": "轮询间隔（秒）",
+    "type": "int",
+    "default": 300,
+    "hint": "每轮依次检查所有启用中的订阅。建议不低于 120 秒，否则容易触发源站限流。"
+  },
+  "fetch": {
+    "description": "抓取设置",
+    "type": "object",
+    "items": {
+      "timeout_seconds": {
+        "description": "单次请求超时（秒）",
+        "type": "int",
+        "default": 15
+      },
+      "max_body_kb": {
+        "description": "响应体大小上限（KB）",
+        "type": "int",
+        "default": 2048,
+        "hint": "超过上限的订阅源会被直接放弃，避免被超大响应拖垮。"
+      },
+      "user_agent": {
+        "description": "User-Agent",
+        "type": "string",
+        "default": "astrbot-rss-pusher/1.0 (+https://github.com/AstrBotDevs/AstrBot)"
+      },
+      "max_redirects": {
+        "description": "最大重定向次数",
+        "type": "int",
+        "default": 4
+      },
+      "allow_private_network": {
+        "description": "允许抓取内网地址",
+        "type": "bool",
+        "default": false,
+        "hint": "默认会拦截 localhost、内网、link-local 与云 metadata 地址。仅在你自建内网 RSS 时需要打开。"
+      }
+    }
+  },
+  "push": {
+    "description": "推送设置",
+    "type": "object",
+    "items": {
+      "message_format": {
+        "description": "推送格式",
+        "type": "string",
+        "default": "auto",
+        "options": [
+          "auto",
+          "markdown",
+          "text"
+        ],
+        "hint": "auto：支持 Markdown 的平台（QQ 官方）发 Markdown，其余发纯文本；markdown：强制 Markdown；text：只发纯文本。"
+      },
+      "markdown_platforms": {
+        "description": "视为支持 Markdown 的平台",
+        "type": "list",
+        "default": [
+          "qq_official",
+          "qq_official_webhook",
+          "qq_official_v2"
+        ],
+        "hint": "填写平台适配器名称（event.get_platform_name() 的返回值）。"
+      },
+      "max_per_feed": {
+        "description": "单订阅单轮最多推送条数",
+        "type": "int",
+        "default": 3,
+        "hint": "避免一次大更新刷屏，剩余条目留到下一轮继续推。"
+      },
+      "max_failures": {
+        "description": "单条目推送失败上限",
+        "type": "int",
+        "default": 3,
+        "hint": "超过后不再重试该条目，避免死循环刷错误。"
+      },
+      "summary_max_chars": {
+        "description": "摘要最大字符数",
+        "type": "int",
+        "default": 500
+      },
+      "max_message_chars": {
+        "description": "单条消息最大字符数",
+        "type": "int",
+        "default": 3600
+      }
+    }
+  },
+  "storage": {
+    "description": "存储设置",
+    "type": "object",
+    "items": {
+      "seen_retention": {
+        "description": "每订阅保留的去重指纹数",
+        "type": "int",
+        "default": 500,
+        "hint": "只保留最近 N 条已见条目用于去重，太小的值可能导致旧的条目被重复推送。"
+      }
+    }
+  },
+  "commands": {
+    "description": "指令设置",
+    "type": "object",
+    "items": {
+      "group_admin_only": {
+        "description": "群内仅管理员可添加/删除",
+        "type": "bool",
+        "default": true,
+        "hint": "开启后，普通群成员仍可查看订阅列表与最近更新，但不能增删订阅。"
+      },
+      "max_per_session": {
+        "description": "单会话订阅数上限",
+        "type": "int",
+        "default": 20
+      },
+      "markdown_replies": {
+        "description": "指令回复使用 Markdown",
+        "type": "bool",
+        "default": true,
+        "hint": "关闭后在所有平台都使用纯文本排版回复指令。"
+      },
+      "timezone_offset_hours": {
+        "description": "展示用时区偏移（小时）",
+        "type": "float",
+        "default": 8.0,
+        "hint": "订阅条目时间按该时区展示，默认东八区。服务器时区不一定是东八区。"
+      }
+    }
+  },
+  "translate": {
+    "description": "外文翻译",
+    "type": "object",
+    "items": {
+      "enabled": {
+        "description": "启用外文标题/摘要翻译",
+        "type": "bool",
+        "default": false,
+        "hint": "开启后会用 AstrBot 当前默认模型把非中文标题与摘要翻成简体中文，会产生模型调用费用；翻译失败自动回落原文。"
+      },
+      "max_chars": {
+        "description": "参与翻译的最大字符数",
+        "type": "int",
+        "default": 400
+      }
+    }
+  }
+}
