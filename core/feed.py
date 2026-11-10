@@ -246,8 +246,12 @@ def _clean_summary(raw_summary: str, raw_content: str, limit: int) -> str | None
 def _stable_item_key(
     entry, feed_title: str, link: str | None, title: str, published: str | None
 ) -> str:
+    # 部分源（如 Mikan 列表模式）把 <guid> 直接填成标题文本，字幕组微调标题
+    # （大小标注、防和谐字词）就会生成全新去重键，导致同一条目被反复重推。
+    # guid 等于标题时降级用 link（条目 URL 通常稳定）。
     entry_id = (entry.get("id") or "").strip()
-    if entry_id:
+    entry_title = (entry.get("title") or "").strip()
+    if entry_id and entry_id != entry_title:
         return f"id:{entry_id}"
     if link:
         return f"link:{link}"
@@ -256,10 +260,11 @@ def _stable_item_key(
 
 
 def _revision_hash(updated: str | None, title: str, raw_summary: str, raw_content: str) -> str:
-    """修订指纹只包含源站内容，不能混进抓取时间，否则每轮都会被判成"有更新"。"""
+    """修订指纹只包含源站内容，不能混进抓取时间，否则每轮都会被判成"有更新"。
+    标题不参与：部分源会反复微调标题（大小标注、防和谐字词），
+    标题抖动不应触发"内容更新"重推，去重稳定性由 item_key 保证。"""
     parts = [
         updated or "",
-        title,
         html_to_text(raw_summary)[:_REVISION_TEXT_MAX_CHARS],
         html_to_text(raw_content)[:_REVISION_TEXT_MAX_CHARS],
     ]
